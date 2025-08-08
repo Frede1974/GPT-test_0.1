@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simple Note App</title>
+    <!-- Tailwind CSS via CDN.  In production you would build Tailwind locally -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 p-4">
+    <div class="max-w-xl mx-auto bg-white shadow-md p-6 rounded">
+      <h1 class="text-2xl font-bold mb-4">Note App</h1>
+      <form id="noteForm" class="mb-4">
+        <input
+          type="text"
+          id="noteText"
+          placeholder="Write a note..."
+          class="border p-2 w-full mb-2"
+        />
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Save
+        </button>
+      </form>
+      <ul id="notesList"></ul>
+    </div>
+
+    <script>
+      // Handle form submission
+      document.getElementById('noteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const textInput = document.getElementById('noteText');
+        const text = textInput.value.trim();
+        if (!text) return;
+        // Send the note to the server
+        const res = await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (res.ok) {
+          textInput.value = '';
+          loadNotes();
+        }
+      });
+
+      // Load all notes from the server and display them
+      async function loadNotes() {
+        const res = await fetch('/api/notes');
+        const notes = await res.json();
+        const list = document.getElementById('notesList');
+        list.innerHTML = '';
+        notes.forEach((note) => {
+          const li = document.createElement('li');
+          li.textContent = note.text;
+          li.className = 'border-b py-1';
+          list.appendChild(li);
+        });
+      }
+      // Initial load
+      loadNotes();
+    </script>
+  </body>
+</html>

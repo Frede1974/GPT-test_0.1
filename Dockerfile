@@ -1,6 +1,7 @@
 # syntax = docker/dockerfile:1
 
 
+
 # Adjust NODE_VERSION as desired
 ARG NODE_VERSION=20.18.0
 FROM node:${NODE_VERSION}-slim AS base
@@ -43,3 +44,5 @@ VOLUME /data
 EXPOSE 3000
 
 CMD [ "npm", "run", "start" ]
+
+CMD [ "sh", "-c", "unset DATABASE_URL && npm run start" ]
